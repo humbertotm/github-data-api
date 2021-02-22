@@ -8,9 +8,11 @@ import (
 var Cfg EnvConfig
 
 type EnvConfig struct {
-	Mode    string `envconfig:"mode"`
-	LogFile string `envconfig:"log_file"`
-	DbURL   string `envconfig:"db_url"`
+	Mode       string `envconfig:"mode"`
+	LogFile    string `envconfig:"log_file"`
+	DbURL      string `envconfig:"db_url"`
+	DbUsername string `envconfig:"db_username"`
+	DbPassword string `envconfig:"db_password"`
 }
 
 func InitConfig() error {
