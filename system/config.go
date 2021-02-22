@@ -1,8 +1,6 @@
 package system
 
 import (
-	"fmt"
-
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 )
@@ -12,7 +10,7 @@ var Cfg EnvConfig
 type EnvConfig struct {
 	Mode    string `envconfig:"mode"`
 	LogFile string `envconfig:"log_file"`
-	DbType  string `envconfig:"db_type"`
+	DbURL   string `envconfig:"db_url"`
 }
 
 func InitConfig() error {
@@ -28,7 +26,5 @@ func InitConfig() error {
 }
 
 func IsDev() bool {
-	fmt.Printf("cfg mode: %s\n", Cfg.Mode)
-	fmt.Printf("cfg db type: %s\n", Cfg.DbType)
 	return Cfg.Mode == "dev"
 }

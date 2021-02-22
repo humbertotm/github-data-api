@@ -8,8 +8,8 @@ import (
 
 type UsersService interface {
 	GetUser(username string) (*domain.User, error)
-	GetUserFollowers(username, maxCount string) ([]*domain.User, error)
-	GetUserFollowing(username, maxCount string) ([]*domain.User, error)
+	GetUserFollowers(username string) (*domain.User, []*domain.User, error)
+	GetUserFollowing(username string) (*domain.User, []*domain.User, error)
 }
 
 type usersService struct {
@@ -32,10 +32,10 @@ func (s *usersService) GetUser(username string) (*domain.User, error) {
 	return s.userData.GetUser(username)
 }
 
-func (s *usersService) GetUserFollowers(username, maxCount string) ([]*domain.User, error) {
-	return s.userData.GetUserFollowers(username, maxCount)
+func (s *usersService) GetUserFollowers(username string) (*domain.User, []*domain.User, error) {
+	return s.userData.GetUserFollowers(username)
 }
 
-func (s *usersService) GetUserFollowing(username, maxCount string) ([]*domain.User, error) {
-	return s.userData.GetUserFollowing(username, maxCount)
+func (s *usersService) GetUserFollowing(username string) (*domain.User, []*domain.User, error) {
+	return s.userData.GetUserFollowing(username)
 }

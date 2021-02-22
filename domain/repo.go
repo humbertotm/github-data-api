@@ -1,7 +1,7 @@
 package domain
 
 type Repo struct {
-	ExternalID      int    `json:"id"`
+	ExternalID      int    `json:"external_id"`
 	Name            string `json:"name"`
 	FullName        string `json:"full_name"`
 	Owner           *User  `json:"owner"`

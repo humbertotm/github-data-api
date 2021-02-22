@@ -3,6 +3,7 @@ package delivery
 import (
 	"net/http"
 
+	"ghdataapi.htm/domain"
 	"ghdataapi.htm/users/service"
 	"github.com/gin-gonic/gin"
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
@@ -45,35 +46,46 @@ func (h *usersHandler) GetUser(c *gin.Context) {
 
 func (h *usersHandler) GetUserFollowers(c *gin.Context) {
 	userName := c.Param("username")
-	maxCount := c.DefaultQuery("maxCount", "10")
-	followers, err := h.usersService.GetUserFollowers(userName, maxCount)
+	user, followers, err := h.usersService.GetUserFollowers(userName)
 	if err != nil || followers == nil {
 		c.Status(http.StatusNotFound)
 		return
 	}
 
-	c.JSON(http.StatusOK, followers)
+	resp := struct {
+		User           *domain.User   `json:"user"`
+		FollowersCount int            `json:"followers_count"`
+		Followers      []*domain.User `json:"followers"`
+	}{
+		User:           user,
+		FollowersCount: len(followers),
+		Followers:      followers,
+	}
+
+	c.JSON(http.StatusOK, resp)
 
 	return
 }
 
 func (h *usersHandler) GetUserFollowing(c *gin.Context) {
 	userName := c.Param("username")
-	maxCount := c.DefaultQuery("maxCount", "10")
-	following, err := h.usersService.GetUserFollowing(userName, maxCount)
+	user, following, err := h.usersService.GetUserFollowing(userName)
 	if err != nil || following == nil {
 		c.Status(http.StatusNotFound)
 		return
 	}
 
-	c.JSON(http.StatusOK, following)
+	resp := struct {
+		User           *domain.User   `json:"user"`
+		FollowingCount int            `json:"following_count"`
+		Following      []*domain.User `json:"following"`
+	}{
+		User:           user,
+		FollowingCount: len(following),
+		Following:      following,
+	}
+
+	c.JSON(http.StatusOK, resp)
 
 	return
 }
-
-// func GetUsers(c *gin.Context) {
-// 	c.DefaultQuery("", "none")
-// 	c.DefaultQuery("follow", "")
-// 	c.DefaultQuery("followedBy", "")
-// 	c.DefaultQuery("contribute", "")
-// }

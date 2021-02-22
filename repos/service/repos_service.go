@@ -7,7 +7,8 @@ import (
 )
 
 type ReposService interface {
-	GetRepo(name string) (*domain.Repo, error)
+	GetRepo(name, owner string) (*domain.Repo, error)
+	GetRepoContributors(name, owner string) (*domain.Repo, []*domain.User, error)
 }
 
 type reposService struct {
@@ -26,6 +27,10 @@ func NewReposService(db neo4j.Driver) ReposService {
 	return service
 }
 
-func (s *reposService) GetRepo(name string) (*domain.Repo, error) {
-	return s.repoData.GetRepo(name)
+func (s *reposService) GetRepo(name, owner string) (*domain.Repo, error) {
+	return s.repoData.GetRepo(name, owner)
+}
+
+func (s *reposService) GetRepoContributors(name, owner string) (*domain.Repo, []*domain.User, error) {
+	return s.repoData.GetRepoContributors(name, owner)
 }
