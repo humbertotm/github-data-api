@@ -13,6 +13,7 @@ const (
 	followerFields = "f.username, f.external_id, f.user_url, f.followers_url, f.following_url, f.repos_url, f.type, f.site_admin"
 )
 
+// UserData defines the interface for the users data layer
 type UserData interface {
 	GetUser(username string) (*domain.User, error)
 	GetUserFollowers(username string) (*domain.User, []*domain.User, error)
@@ -25,6 +26,7 @@ type userData struct {
 
 var data UserData
 
+// NewUserData returns an instance of UserData
 func NewUserData(db neo4j.Driver) UserData {
 	if data == nil {
 		data = &userData{db}
@@ -33,6 +35,7 @@ func NewUserData(db neo4j.Driver) UserData {
 	return data
 }
 
+// GetUser retrieves a user identified by its username from the db
 func (d *userData) GetUser(username string) (*domain.User, error) {
 	log.Info.Printf("Retrieving user %s\n", username)
 	query := fmt.Sprintf("MATCH (u:User {username: $username}) RETURN %s", userFields)
@@ -62,6 +65,7 @@ func (d *userData) GetUser(username string) (*domain.User, error) {
 	}, nil
 }
 
+// GetUserFollowers retrieves a user and a list of its followers from the db
 func (d *userData) GetUserFollowers(username string) (*domain.User, []*domain.User, error) {
 	log.Info.Printf("Retrieving followers for user %s\n", username)
 	queryTemplate := `
@@ -111,6 +115,7 @@ func (d *userData) GetUserFollowers(username string) (*domain.User, []*domain.Us
 	return user, followers, nil
 }
 
+// GetUserFollowing retrieves a user and a list of followed users from the db
 func (d *userData) GetUserFollowing(username string) (*domain.User, []*domain.User, error) {
 	log.Info.Printf("Retrieving users followed by user %s\n", username)
 	queryTemplate := `

@@ -14,6 +14,7 @@ const (
 	repoFields  = "r.external_id, r.name, r.full_name, r.html_url, r.url, r.contributors_url, r.issues_url, r.languages_url"
 )
 
+// RepoData defines the interface for the repo data layer
 type RepoData interface {
 	GetRepo(name, owner string) (*domain.Repo, error)
 	GetRepoContributors(name, owner string) (*domain.Repo, []*domain.User, error)
@@ -25,6 +26,7 @@ type repoData struct {
 
 var data RepoData
 
+// NewRepoData returns an instance of RepoData
 func NewRepoData(db neo4j.Driver) RepoData {
 	if data == nil {
 		data = &repoData{db}
@@ -33,6 +35,7 @@ func NewRepoData(db neo4j.Driver) RepoData {
 	return data
 }
 
+// GetRepo retrieves a repo identified by name and owner
 func (d *repoData) GetRepo(name, owner string) (*domain.Repo, error) {
 	log.Info.Printf("Retrieving repo %s owned by %s\n", name, owner)
 	queryTemplate := `
@@ -80,6 +83,7 @@ func (d *repoData) GetRepo(name, owner string) (*domain.Repo, error) {
 	}, nil
 }
 
+// GetRepoContributors returns a repo and a list of its contributors
 func (d *repoData) GetRepoContributors(name, owner string) (*domain.Repo, []*domain.User, error) {
 	log.Info.Printf("Retrieving contributors for repo %s owned by %s\n", name, owner)
 	queryTemplate := `

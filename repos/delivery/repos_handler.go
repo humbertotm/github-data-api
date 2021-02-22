@@ -10,6 +10,7 @@ import (
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
 )
 
+// ReposHandler defines the interface for the handler of repository APIs
 type ReposHandler interface {
 	GetRepo(c *gin.Context)
 	GetRepoContributors(c *gin.Context)
@@ -21,6 +22,7 @@ type reposHandler struct {
 
 var handler ReposHandler
 
+// NewReposHandler returns an instance of ReposHandler
 func NewReposHandler(db neo4j.Driver) ReposHandler {
 	if handler == nil {
 		handler = &reposHandler{
@@ -31,6 +33,7 @@ func NewReposHandler(db neo4j.Driver) ReposHandler {
 	return handler
 }
 
+// GetRepo retrieves a single repo identified by its name and owner
 func (h *reposHandler) GetRepo(c *gin.Context) {
 	userName := c.Param("username")
 	repoName := c.Param("reponame")
@@ -45,6 +48,7 @@ func (h *reposHandler) GetRepo(c *gin.Context) {
 	return
 }
 
+// GetRepoContributors retrieves a repo and a list of its contributors
 func (h *reposHandler) GetRepoContributors(c *gin.Context) {
 	userName := c.Param("username")
 	repoName := c.Param("reponame")

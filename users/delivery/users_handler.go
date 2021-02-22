@@ -9,6 +9,7 @@ import (
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
 )
 
+// UsersHandler defines the interface for the handler of user APIs
 type UsersHandler interface {
 	GetUser(c *gin.Context)
 	GetUserFollowers(c *gin.Context)
@@ -21,6 +22,7 @@ type usersHandler struct {
 
 var handler UsersHandler
 
+// NewUsersHandler returns and instance of UsersHandler
 func NewUsersHandler(db neo4j.Driver) UsersHandler {
 	if handler == nil {
 		handler = &usersHandler{
@@ -31,6 +33,7 @@ func NewUsersHandler(db neo4j.Driver) UsersHandler {
 	return handler
 }
 
+// GetUser retrieves a user identified by its username
 func (h *usersHandler) GetUser(c *gin.Context) {
 	userName := c.Param("username")
 	user, err := h.usersService.GetUser(userName)
@@ -44,6 +47,7 @@ func (h *usersHandler) GetUser(c *gin.Context) {
 	return
 }
 
+// GetUserFollowers returns a user, and a list of its followers
 func (h *usersHandler) GetUserFollowers(c *gin.Context) {
 	userName := c.Param("username")
 	user, followers, err := h.usersService.GetUserFollowers(userName)
@@ -67,6 +71,7 @@ func (h *usersHandler) GetUserFollowers(c *gin.Context) {
 	return
 }
 
+// GetUserFollowing returns a user and a list of followed users
 func (h *usersHandler) GetUserFollowing(c *gin.Context) {
 	userName := c.Param("username")
 	user, following, err := h.usersService.GetUserFollowing(userName)
