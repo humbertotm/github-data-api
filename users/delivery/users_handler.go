@@ -10,6 +10,8 @@ import (
 
 type UsersHandler interface {
 	GetUser(c *gin.Context)
+	GetUserFollowers(c *gin.Context)
+	GetUserFollowing(c *gin.Context)
 }
 
 type usersHandler struct {
@@ -29,9 +31,49 @@ func NewUsersHandler(db neo4j.Driver) UsersHandler {
 }
 
 func (h *usersHandler) GetUser(c *gin.Context) {
-	user, _ := h.usersService.GetUser("mojombo")
-	// [wololo] Handle error
+	userName := c.Param("username")
+	user, err := h.usersService.GetUser(userName)
+	if err != nil {
+		c.Status(http.StatusNotFound)
+		return
+	}
+
 	c.JSON(http.StatusOK, user)
 
 	return
 }
+
+func (h *usersHandler) GetUserFollowers(c *gin.Context) {
+	userName := c.Param("username")
+	maxCount := c.DefaultQuery("maxCount", "10")
+	followers, err := h.usersService.GetUserFollowers(userName, maxCount)
+	if err != nil || followers == nil {
+		c.Status(http.StatusNotFound)
+		return
+	}
+
+	c.JSON(http.StatusOK, followers)
+
+	return
+}
+
+func (h *usersHandler) GetUserFollowing(c *gin.Context) {
+	userName := c.Param("username")
+	maxCount := c.DefaultQuery("maxCount", "10")
+	following, err := h.usersService.GetUserFollowing(userName, maxCount)
+	if err != nil || following == nil {
+		c.Status(http.StatusNotFound)
+		return
+	}
+
+	c.JSON(http.StatusOK, following)
+
+	return
+}
+
+// func GetUsers(c *gin.Context) {
+// 	c.DefaultQuery("", "none")
+// 	c.DefaultQuery("follow", "")
+// 	c.DefaultQuery("followedBy", "")
+// 	c.DefaultQuery("contribute", "")
+// }

@@ -29,7 +29,8 @@ func NewReposHandler(db neo4j.Driver) ReposHandler {
 }
 
 func (h *reposHandler) GetRepo(c *gin.Context) {
-	repo, _ := h.reposService.GetRepo("screener")
+	repoName := c.Param("reponame")
+	repo, _ := h.reposService.GetRepo(repoName)
 	c.JSON(http.StatusOK, repo)
 
 	return

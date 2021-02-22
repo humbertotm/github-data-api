@@ -11,6 +11,8 @@ const userFields = "u.username, u.external_id, u.user_url, u.followers_url, u.fo
 
 type UserData interface {
 	GetUser(username string) (*domain.User, error)
+	GetUserFollowers(username, maxCount string) ([]*domain.User, error)
+	GetUserFollowing(username, maxCount string) ([]*domain.User, error)
 }
 
 type userData struct {
@@ -53,4 +55,74 @@ func (d *userData) GetUser(username string) (*domain.User, error) {
 		Type:         record.Values[6].(string),
 		SiteAdmin:    record.Values[7].(bool),
 	}, nil
+}
+
+func (d *userData) GetUserFollowers(username, maxCount string) ([]*domain.User, error) {
+	queryTemplate := `
+                MATCH (f:User {username: $username})
+                MATCH (u)-[:FOLLOWS]->(f)
+                RETURN %s
+                LIMIT %s
+        `
+	query := fmt.Sprintf(queryTemplate, userFields, maxCount)
+
+	session := d.db.NewSession(neo4j.SessionConfig{})
+	defer session.Close()
+
+	data, err := session.Run(query, map[string]interface{}{"username": username})
+	if err != nil {
+		return nil, err
+	}
+
+	var followers []*domain.User
+	for data.Next() {
+		follower := &domain.User{
+			Username:     data.Record().Values[0].(string),
+			ExternalID:   int(data.Record().Values[1].(float64)),
+			UserURL:      data.Record().Values[2].(string),
+			FollowersURL: data.Record().Values[3].(string),
+			FollowingURL: data.Record().Values[4].(string),
+			ReposURL:     data.Record().Values[5].(string),
+			Type:         data.Record().Values[6].(string),
+			SiteAdmin:    data.Record().Values[7].(bool),
+		}
+		followers = append(followers, follower)
+	}
+
+	return followers, nil
+}
+
+func (d *userData) GetUserFollowing(username, maxCount string) ([]*domain.User, error) {
+	queryTemplate := `
+                MATCH (f:User {username: $username})
+                MATCH (f)-[:FOLLOWS]->(u)
+                RETURN %s
+                LIMIT %s
+        `
+	query := fmt.Sprintf(queryTemplate, userFields, maxCount)
+
+	session := d.db.NewSession(neo4j.SessionConfig{})
+	defer session.Close()
+
+	data, err := session.Run(query, map[string]interface{}{"username": username})
+	if err != nil {
+		return nil, err
+	}
+
+	var followers []*domain.User
+	for data.Next() {
+		follower := &domain.User{
+			Username:     data.Record().Values[0].(string),
+			ExternalID:   int(data.Record().Values[1].(float64)),
+			UserURL:      data.Record().Values[2].(string),
+			FollowersURL: data.Record().Values[3].(string),
+			FollowingURL: data.Record().Values[4].(string),
+			ReposURL:     data.Record().Values[5].(string),
+			Type:         data.Record().Values[6].(string),
+			SiteAdmin:    data.Record().Values[7].(bool),
+		}
+		followers = append(followers, follower)
+	}
+
+	return followers, nil
 }

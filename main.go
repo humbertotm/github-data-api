@@ -34,15 +34,19 @@ func InitRouter(db neo4j.Driver) *gin.Engine {
 	r := gin.Default()
 
 	usersHandler := uDelivery.NewUsersHandler(db)
+	// r.GET("/user/:username", usersHandler.GetUser)
 	users := r.Group("/users")
 	{
-		users.GET("/humbertotm", usersHandler.GetUser)
+		users.GET("/user/:username", usersHandler.GetUser)
+		users.GET("/user/:username/followers", usersHandler.GetUserFollowers)
+		users.GET("/user/:username/following", usersHandler.GetUserFollowing)
 	}
 
 	reposHandler := rDelivery.NewReposHandler(db)
 	repos := r.Group("/repositories")
 	{
-		repos.GET("/screener", reposHandler.GetRepo)
+		repos.GET("/repository/:username/:reponame", reposHandler.GetRepo)
+		repos.GET("/repository/:username/:reponame/contributors")
 	}
 
 	return r

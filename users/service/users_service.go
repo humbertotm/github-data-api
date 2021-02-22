@@ -8,6 +8,8 @@ import (
 
 type UsersService interface {
 	GetUser(username string) (*domain.User, error)
+	GetUserFollowers(username, maxCount string) ([]*domain.User, error)
+	GetUserFollowing(username, maxCount string) ([]*domain.User, error)
 }
 
 type usersService struct {
@@ -28,4 +30,12 @@ func NewUsersService(db neo4j.Driver) UsersService {
 
 func (s *usersService) GetUser(username string) (*domain.User, error) {
 	return s.userData.GetUser(username)
+}
+
+func (s *usersService) GetUserFollowers(username, maxCount string) ([]*domain.User, error) {
+	return s.userData.GetUserFollowers(username, maxCount)
+}
+
+func (s *usersService) GetUserFollowing(username, maxCount string) ([]*domain.User, error) {
+	return s.userData.GetUserFollowing(username, maxCount)
 }
